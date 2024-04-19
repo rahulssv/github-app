@@ -13,10 +13,10 @@ dotenv.config();
 // This assigns the values of your environment variables to local variables.
 const appId = process.env.APP_ID;
 const webhookSecret = process.env.WEBHOOK_SECRET;
-const privateKeyPath = process.env.PRIVATE_KEY_PATH;
-
+//const privateKeyPath = process.env.PRIVATE_KEY_PATH;
+const privateKey = process.env.PRIVATE_KEY_PATH;
 // This reads the contents of your private key file.
-const privateKey = fs.readFileSync(privateKeyPath, "utf8");
+//const privateKey = fs.readFileSync(privateKeyPath, "utf8");
 
 // This creates a new instance of the Octokit App class.
 const app = new App({
@@ -67,7 +67,7 @@ app.webhooks.onError((error) => {
 // This determines where your server will listen.
 //
 // For local development, your server will listen to port 3000 on `localhost`. When you deploy your app, you will change these values. For more information, see "[Deploy your app](#deploy-your-app)."
-const port = 3000;
+const port = 3001;
 const host = 'localhost';
 const path = "/api/webhook";
 const localWebhookUrl = `http://${host}:${port}${path}`;
