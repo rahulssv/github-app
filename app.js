@@ -6,6 +6,8 @@ import {App} from "octokit";
 import {createNodeMiddleware} from "@octokit/webhooks";
 import fs from "fs";
 import http from "http";
+import SmeeClient from "smee-client"
+
 
 // This reads your `.env` file and adds the variables from that file to the `process.env` object in Node.js.
 dotenv.config();
@@ -14,9 +16,11 @@ dotenv.config();
 const appId = process.env.APP_ID;
 const webhookSecret = process.env.WEBHOOK_SECRET;
 const privateKeyPath = process.env.PRIVATE_KEY_PATH;
-
+const webhookURL =process.env.WEBHOOK_PROXY_URL
 // This reads the contents of your private key file.
 const privateKey = fs.readFileSync(privateKeyPath, "utf8");
+
+
 
 // This creates a new instance of the Octokit App class.
 const app = new App({
@@ -80,9 +84,17 @@ const localWebhookUrl = `http://${host}:${port}${path}`;
 //    - Parse the webhook event payload and identify the type of event.
 //    - Trigger the corresponding webhook event handler.
 const middleware = createNodeMiddleware(app.webhooks, {path});
+const smee = new SmeeClient({
+  source: webhookURL,
+  target: localWebhookUrl,
+  logger: console
+})
 
+const events = smee.start()
 // This creates a Node.js server that listens for incoming HTTP requests (including webhook payloads from GitHub) on the specified port. When the server receives a request, it executes the `middleware` function that you defined earlier. Once the server is running, it logs messages to the console to indicate that it is listening.
 http.createServer(middleware).listen(port, () => {
   console.log(`Server is listening for events at: ${localWebhookUrl}`);
   console.log('Press Ctrl + C to quit.')
 });
+
+events.close()
